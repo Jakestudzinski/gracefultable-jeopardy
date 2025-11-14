@@ -1,0 +1,8 @@
+{
+  "name": "gracefultable-jeopardy",
+  "version": "1.0.0",
+  "framework": "flask",
+  "build_command": "",
+  "install_command": "pip install -r requirements.txt",
+  "start_command": "gunicorn app:app"
+}

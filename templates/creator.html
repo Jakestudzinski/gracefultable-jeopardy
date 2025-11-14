@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GracefulTable Jeopardy</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+</head>
+<body>
+    <div class="container">
+        <h1>Create Jeopardy Game</h1>
+        
+        <form id="game-form">
+            <div class="form-group">
+                <label for="game-title">Game Title</label>
+                <input type="text" id="game-title" name="title" required>
+            </div>
+            
+            <h2>Categories</h2>
+            <div id="categories-container"></div>
+            
+            <button type="button" id="add-category" class="btn secondary">Add Category</button>
+            
+            <div class="actions">
+                <button type="submit" class="btn primary">Save Game</button>
+                <a href="{{ url_for('index') }}" class="btn">Cancel</a>
+            </div>
+        </form>
+    </div>
+    
+    <!-- Category Template (hidden) -->
+    <template id="category-template">
+        <div class="category">
+            <div class="form-group">
+                <label for="category-title-{id}">Category Title</label>
+                <input type="text" id="category-title-{id}" name="categories[{id}][title]" required>
+                <button type="button" class="btn small danger remove-category">Remove</button>
+            </div>
+            
+            <h3>Clues</h3>
+            <div class="clues-container"></div>
+            
+            <button type="button" class="btn small add-clue">Add Clue</button>
+        </div>
+    </template>
+    
+    <!-- Clue Template (hidden) -->
+    <template id="clue-template">
+        <div class="clue">
+            <div class="form-group">
+                <label for="clue-value-{categoryId}-{clueId}">Value</label>
+                <select id="clue-value-{categoryId}-{clueId}" name="categories[{categoryId}][clues][{clueId}][value]" required>
+                    <option value="200">200</option>
+                    <option value="400">400</option>
+                    <option value="600">600</option>
+                    <option value="800">800</option>
+                    <option value="1000">1000</option>
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label for="clue-answer-{categoryId}-{clueId}">Answer (shown to players)</label>
+                <textarea id="clue-answer-{categoryId}-{clueId}" name="categories[{categoryId}][clues][{clueId}][answer]" required></textarea>
+            </div>
+            
+            <div class="form-group">
+                <label for="clue-question-{categoryId}-{clueId}">Question (correct response)</label>
+                <textarea id="clue-question-{categoryId}-{clueId}" name="categories[{categoryId}][clues][{clueId}][question]" required></textarea>
+            </div>
+            
+            <button type="button" class="btn small danger remove-clue">Remove</button>
+        </div>
+    </template>
+
+    <script src="{{ url_for('static', filename='js/creator.js') }}"></script>
+</body>
+</html>

@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GracefulTable Jeopardy</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+</head>
+<body>
+    <div class="container">
+        <h1>GracefulTable Jeopardy</h1>
+        
+        <div class="actions">
+            <a href="{{ url_for('creator') }}" class="btn primary">Create New Game</a>
+        </div>
+        
+        <h2>Your Games</h2>
+        <div id="games-list" class="games-list">
+            <p>Loading games...</p>
+        </div>
+    </div>
+
+    <script src="{{ url_for('static', filename='js/index.js') }}"></script>
+</body>
+</html>

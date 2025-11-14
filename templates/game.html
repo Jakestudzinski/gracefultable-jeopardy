@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Play Jeopardy</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+</head>
+<body>
+    <div class="game-container">
+        <header>
+            <h1 id="game-title">Jeopardy Game</h1>
+            <div class="game-controls">
+                <button id="back-to-home" class="btn">Back to Home</button>
+            </div>
+        </header>
+        
+        <div id="setup-screen" class="setup-screen">
+            <h2>Player Setup</h2>
+            <div id="players-container">
+                <div class="player-input">
+                    <input type="text" class="player-name" placeholder="Player 1 Name" required>
+                </div>
+                <div class="player-input">
+                    <input type="text" class="player-name" placeholder="Player 2 Name" required>
+                </div>
+            </div>
+            
+            <button id="add-player" class="btn secondary">Add Player</button>
+            <button id="start-game" class="btn primary">Start Game</button>
+        </div>
+        
+        <div id="game-board" class="game-board" style="display: none;">
+            <div id="categories-row" class="categories-row"></div>
+            <div id="board-grid" class="board-grid"></div>
+        </div>
+        
+        <div id="clue-display" class="clue-display" style="display: none;">
+            <div class="clue-content">
+                <p id="clue-text"></p>
+            </div>
+            
+            <div class="clue-controls">
+                <div class="timer" id="timer">30</div>
+                <button id="show-answer" class="btn primary">Show Answer</button>
+            </div>
+        </div>
+        
+        <div id="answer-display" class="answer-display" style="display: none;">
+            <div class="answer-content">
+                <p>Correct response:</p>
+                <p id="answer-text"></p>
+            </div>
+            
+            <div class="score-controls">
+                <h3>Who got it right?</h3>
+                <div id="player-buttons"></div>
+                <button id="nobody" class="btn secondary">Nobody</button>
+                <button id="continue" class="btn primary">Continue</button>
+            </div>
+        </div>
+        
+        <footer>
+            <div id="scoreboard" class="scoreboard"></div>
+        </footer>
+    </div>
+
+    <script>
+        const gameId = "{{ game_id }}";
+    </script>
+    <script src="{{ url_for('static', filename='js/game.js') }}"></script>
+</body>
+</html>
