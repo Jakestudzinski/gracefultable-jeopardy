@@ -128,13 +128,29 @@ document.addEventListener('DOMContentLoaded', () => {
                     const answer = clue.querySelector('textarea[name^="categories"][name*="[clues]"][name$="[answer]"]').value;
                     const question = clue.querySelector('textarea[name^="categories"][name*="[clues]"][name$="[question]"]').value;
                     
-                    await fetch(`/api/games/${resultGameId}/categories/${categoryId}/clues`, {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json'
-                        },
-                        body: JSON.stringify({ value, answer, question })
-                    });
+                    try {
+                        console.log(`Saving clue: ${value}, ${question.substring(0, 20)}... to category ${categoryId}`);
+                        const response = await fetch(`/api/games/${resultGameId}/categories/${categoryId}/clues`, {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json'
+                            },
+                            body: JSON.stringify({ value, answer, question })
+                        });
+                        
+                        if (!response.ok) {
+                            const errorText = await response.text();
+                            console.error(`Error saving clue: ${errorText}`);
+                            throw new Error(`Failed to save clue: ${errorText}`);
+                        }
+                        
+                        const clueData = await response.json();
+                        console.log(`Clue saved successfully with ID: ${clueData.id}`);
+                    } catch (error) {
+                        console.error(`Error saving clue: ${error.message}`);
+                        alert(`Error saving clue: ${error.message}. Please try again.`);
+                        // Continue with other clues instead of breaking the entire save process
+                    }
                 }
             }
             

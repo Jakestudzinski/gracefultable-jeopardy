@@ -207,12 +207,21 @@ def add_clue(game_id, category_id):
         # Find category
         category = Category.query.filter_by(id=category_id, game_id=game_id).first()
         if category is None:
-            return jsonify({'error': 'Category not found'}), 404
+            error_msg = f'Category not found with id={category_id} for game_id={game_id}'
+            print(error_msg)
+            return jsonify({'error': error_msg}), 404
         
         # Create clue
+        try:
+            value = int(data['value'])
+        except (ValueError, TypeError):
+            error_msg = f"Invalid value format: {data['value']} - must be an integer"
+            print(error_msg)
+            return jsonify({'error': error_msg}), 400
+            
         clue = Clue(
             category_id=category.id,
-            value=int(data['value']),
+            value=value,
             answer=data['answer'],
             question=data['question'],
             status='unused'
@@ -220,6 +229,7 @@ def add_clue(game_id, category_id):
         
         db.session.add(clue)
         db.session.commit()
+        print(f"Clue created successfully: id={clue.id}, category_id={category.id}, game_id={game_id}")
         
         return jsonify({
             'id': str(clue.id),
