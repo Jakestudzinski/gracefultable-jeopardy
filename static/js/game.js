@@ -243,6 +243,7 @@ document.addEventListener('DOMContentLoaded', () => {
             
             playerButtons.appendChild(button);
         });
+    }
 
     
     // Update player score
