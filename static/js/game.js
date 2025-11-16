@@ -160,13 +160,13 @@ document.addEventListener('DOMContentLoaded', () => {
         // Determine values (assuming all categories have the same values)
         const values = [200, 400, 600, 800, 1000];
         
-        // Create board grid - by category first, then by value
-        for (let categoryIndex = 0; categoryIndex < gameData.categories.length; categoryIndex++) {
-            const category = gameData.categories[categoryIndex];
+        // Create board grid - by value first, then by category
+        for (let valueIndex = 0; valueIndex < values.length; valueIndex++) {
+            const value = values[valueIndex];
             
-            // For each value in the category
-            for (let valueIndex = 0; valueIndex < values.length; valueIndex++) {
-                const value = values[valueIndex];
+            // For each category
+            for (let categoryIndex = 0; categoryIndex < gameData.categories.length; categoryIndex++) {
+                const category = gameData.categories[categoryIndex];
                 const clue = category.clues.find(c => parseInt(c.value) === value);
                 
                 const cell = document.createElement('div');
