@@ -19,16 +19,19 @@
 }
 
 body {
-    font-family: 'Circular CS', 'Arial', sans-serif;
-    line-height: 1.6;
+    font-family: var(--font-secondary);
+    font-size: var(--font-size-base);
+    line-height: var(--line-height-base);
     color: var(--text-color);
     background-color: var(--light-bg);
     padding: 20px;
 }
 
 h1, h2, h3 {
+    font-family: var(--font-primary);
     margin-bottom: 20px;
     color: var(--primary-color);
+    font-weight: var(--font-weight-bold);
 }
 
 .container {
@@ -43,17 +46,29 @@ h1, h2, h3 {
 /* Buttons */
 .btn {
     display: inline-block;
-    background: var(--light-bg);
-    color: var(--text-color);
-    border: none;
     padding: 10px 20px;
-    margin: 5px 0;
+    background-color: var(--primary-color);
+    color: white;
+    text-decoration: none;
+    border: none;
     border-radius: var(--border-radius);
     cursor: pointer;
-    text-decoration: none;
-    font-size: 15px;
-    font-family: inherit;
-    text-align: center;
+    font-size: 16px;
+    transition: background-color 0.3s;
+    margin-right: 8px;
+    margin-bottom: 8px;
+}
+
+.btn:hover {
+    opacity: 0.9;
+}
+
+.btn:active {
+    transform: scale(0.98);
+}
+
+.btn.danger {
+    background-color: var(--danger-color);
 }
 
 .btn.primary {
@@ -136,6 +151,33 @@ textarea {
     font-weight: bold;
 }
 
+/* Alerts */
+.alert {
+    padding: 10px 15px;
+    border-radius: var(--border-radius);
+    margin-bottom: 20px;
+    font-weight: bold;
+    position: relative;
+    animation: fadeIn 0.3s ease-in;
+}
+
+.alert.success {
+    background-color: #dff0d8;
+    color: #3c763d;
+    border: 1px solid #d6e9c6;
+}
+
+.alert.error {
+    background-color: #f2dede;
+    color: #a94442;
+    border: 1px solid #ebccd1;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(-10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
 /* Game List */
 .games-list {
     margin-top: 20px;
@@ -185,7 +227,15 @@ textarea {
 }
 
 .player-input {
-    margin-bottom: 10px;
+    margin-bottom: 15px;
+}
+
+#players-container {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    max-width: 400px;
+    margin: 0 auto 20px;
 }
 
 .game-board {
@@ -217,9 +267,10 @@ textarea {
 }
 
 .category-title {
+    font-family: var(--font-primary);
     font-size: 14px;
     line-height: 1.2;
-    font-weight: bold;
+    font-weight: var(--font-weight-bold);
     color: white;
     text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
 }
@@ -301,14 +352,62 @@ textarea {
     align-items: center;
 }
 
+/* Guest Mode */
+.guest-mode-container {
+    background: var(--light-bg);
+    padding: 15px;
+    border-radius: var(--border-radius);
+    margin: 20px 0;
+}
+
+.guest-input-container {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 10px;
+}
+
+.guests-list {
+    margin-top: 10px;
+}
+
+.guest-item {
+    background: var(--card-bg);
+    padding: 8px 12px;
+    border-radius: var(--border-radius);
+    margin-bottom: 5px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
 /* Scoreboard */
-.scoreboard {
+.scoreboard, .guest-scoreboard {
     background: var(--card-bg);
     padding: 15px;
     border-radius: var(--border-radius);
     display: flex;
-    justify-content: space-around;
+    flex-direction: column;
     margin-top: 20px;
+}
+
+.scoreboard {
+    flex-direction: row;
+    justify-content: space-around;
+}
+
+.guest-scores {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 10px;
+}
+
+.guest-score {
+    background: var(--light-bg);
+    padding: 8px 12px;
+    border-radius: var(--border-radius);
+    text-align: center;
+    min-width: 120px;
 }
 
 .player-score {

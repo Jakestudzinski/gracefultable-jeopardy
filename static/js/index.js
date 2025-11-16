@@ -71,7 +71,20 @@ async function loadGames() {
             playButton.className = 'btn primary';
             playButton.textContent = 'Play';
             
+            const editButton = document.createElement('a');
+            editButton.href = `/edit/${game.id}`;
+            editButton.className = 'btn secondary';
+            editButton.textContent = 'Edit';
+            
+            const deleteButton = document.createElement('button');
+            deleteButton.className = 'btn danger';
+            deleteButton.textContent = 'Delete';
+            deleteButton.dataset.gameId = game.id;
+            deleteButton.addEventListener('click', confirmDeleteGame);
+            
             actions.appendChild(playButton);
+            actions.appendChild(editButton);
+            actions.appendChild(deleteButton);
             
             gameCard.appendChild(gameInfo);
             gameCard.appendChild(actions);
@@ -89,4 +102,58 @@ function formatDate(dateString) {
     
     const date = new Date(dateString);
     return date.toLocaleDateString() + ' ' + date.toLocaleTimeString();
+}
+
+// Function to confirm deletion of a game
+async function confirmDeleteGame(event) {
+    const gameId = event.target.dataset.gameId;
+    const gameTitle = event.target.closest('.game-card').querySelector('h3').textContent;
+    
+    if (confirm(`Are you sure you want to delete the game "${gameTitle}"? This action cannot be undone.`)) {
+        await deleteGame(gameId);
+    }
+}
+
+// Function to delete a game
+async function deleteGame(gameId) {
+    try {
+        const response = await fetch(`/api/games/${gameId}`, {
+            method: 'DELETE',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        });
+        
+        const result = await response.json();
+        
+        if (result.success) {
+            // Remove the game card from the DOM
+            const gameCard = document.querySelector(`.game-card button[data-game-id="${gameId}"]`).closest('.game-card');
+            gameCard.remove();
+            
+            // Show success message
+            const successMessage = document.createElement('div');
+            successMessage.className = 'alert success';
+            successMessage.textContent = 'Game deleted successfully!';
+            
+            const container = document.querySelector('.container');
+            container.insertBefore(successMessage, container.querySelector('.games-list'));
+            
+            // Remove the message after 3 seconds
+            setTimeout(() => {
+                successMessage.remove();
+            }, 3000);
+            
+            // If no games left, show message
+            const gamesList = document.getElementById('games-list');
+            if (gamesList.children.length === 0) {
+                gamesList.innerHTML = '<p>No games found. Create a new game to get started!</p>';
+            }
+        } else {
+            throw new Error(result.error || 'Failed to delete game');
+        }
+    } catch (error) {
+        console.error('Error deleting game:', error);
+        alert(`Error deleting game: ${error.message}`);
+    }
 }

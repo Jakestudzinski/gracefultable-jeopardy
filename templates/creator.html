@@ -4,11 +4,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>GracefulTable Jeopardy</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/fonts.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
 </head>
 <body>
     <div class="container">
-        <h1>Create Jeopardy Game</h1>
+        <h1>{% if edit_mode %}Edit{% else %}Create{% endif %} Jeopardy Game</h1>
         
         <form id="game-form">
             <div class="form-group">
@@ -72,6 +73,15 @@
         </div>
     </template>
 
+    {% if edit_mode %}
+    <script>
+        // Pass game ID to JavaScript
+        const gameId = "{{ game_id }}";
+        const editMode = true;
+    </script>
+    <script src="{{ url_for('static', filename='js/editor.js') }}"></script>
+    {% else %}
     <script src="{{ url_for('static', filename='js/creator.js') }}"></script>
+    {% endif %}
 </body>
 </html>
