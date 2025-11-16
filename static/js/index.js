@@ -1,6 +1,38 @@
 document.addEventListener('DOMContentLoaded', () => {
+    checkDatabaseConnection();
     loadGames();
 });
+
+async function checkDatabaseConnection() {
+    try {
+        // Only add detailed status if the server-side status wasn't already provided
+        if (!document.querySelector('.db-status')) {
+            const response = await fetch('/api/status');
+            const status = await response.json();
+            
+            const container = document.querySelector('.container');
+            const actionsDiv = document.querySelector('.actions');
+            
+            const dbStatusDiv = document.createElement('div');
+            dbStatusDiv.className = 'db-status';
+            dbStatusDiv.innerHTML = `
+                <h3>Database Connection Status</h3>
+                <div class="status-indicator ${status.database.connected ? 'connected' : 'disconnected'}">
+                    <p><strong>Status:</strong> ${status.database.connected ? 'Connected' : 'Disconnected'}</p>
+                    <p><strong>Games in database:</strong> ${status.database.game_count}</p>
+                    <p><strong>Categories in database:</strong> ${status.database.category_count}</p>
+                    <p><strong>Clues in database:</strong> ${status.database.clue_count}</p>
+                    ${!status.database.connected ? `<p class="error"><strong>Error:</strong> ${status.error}</p>` : ''}
+                </div>
+            `;
+            
+            // Insert after actions div
+            container.insertBefore(dbStatusDiv, actionsDiv.nextSibling);
+        }
+    } catch (error) {
+        console.error('Error checking database connection:', error);
+    }
+}
 
 async function loadGames() {
     try {

@@ -35,7 +35,22 @@ os.makedirs(data_dir, exist_ok=True)
 # Routes
 @app.route('/')
 def index():
-    return render_template('index.html')
+    # Test database connection
+    db_status = {
+        'connected': True,
+        'game_count': 0,
+        'error': None
+    }
+    
+    try:
+        # Try to query the database
+        game_count = Game.query.count()
+        db_status['game_count'] = game_count
+    except Exception as e:
+        db_status['connected'] = False
+        db_status['error'] = str(e)
+    
+    return render_template('index.html', db_status=db_status)
 
 @app.route('/creator')
 def creator():
@@ -178,6 +193,31 @@ def add_clue(game_id, category_id):
     except SQLAlchemyError as e:
         db.session.rollback()
         return jsonify({'error': str(e)}), 500
+
+@app.route('/api/status', methods=['GET'])
+def api_status():
+    status = {
+        'status': 'ok',
+        'database': {
+            'connected': True,
+            'game_count': 0,
+            'category_count': 0,
+            'clue_count': 0,
+        },
+        'timestamp': datetime.now().isoformat()
+    }
+    
+    try:
+        # Try database queries
+        status['database']['game_count'] = Game.query.count()
+        status['database']['category_count'] = Category.query.count()
+        status['database']['clue_count'] = Clue.query.count()
+    except Exception as e:
+        status['status'] = 'error'
+        status['database']['connected'] = False
+        status['error'] = str(e)
+    
+    return jsonify(status)
 
 if __name__ == '__main__':
     port = int(os.environ.get("PORT", 5000))

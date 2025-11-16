@@ -14,6 +14,19 @@
             <a href="{{ url_for('creator') }}" class="btn primary">Create New Game</a>
         </div>
         
+        {% if db_status %}
+        <div class="db-status">
+            <h3>Database Connection Status</h3>
+            <div class="status-indicator {% if db_status.connected %}connected{% else %}disconnected{% endif %}">
+                <p><strong>Status:</strong> {% if db_status.connected %}Connected{% else %}Disconnected{% endif %}</p>
+                <p><strong>Games in database:</strong> {{ db_status.game_count }}</p>
+                {% if not db_status.connected %}
+                <p class="error"><strong>Error:</strong> {{ db_status.error }}</p>
+                {% endif %}
+            </div>
+        </div>
+        {% endif %}
+        
         <h2>Your Games</h2>
         <div id="games-list" class="games-list">
             <p>Loading games...</p>
