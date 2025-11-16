@@ -17,6 +17,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const categoriesRow = document.getElementById('categories-row');
     const boardGrid = document.getElementById('board-grid');
     const playersContainer = document.getElementById('players-container');
+    const addPlayerButton = document.getElementById('add-player');
     const startGameButton = document.getElementById('start-game');
     const backToHomeButton = document.getElementById('back-to-home');
     const clueText = document.getElementById('clue-text');
@@ -48,6 +49,31 @@ document.addEventListener('DOMContentLoaded', () => {
         continueGame();
     });
     continueButton.addEventListener('click', continueGame);
+    
+    // Add player button handler
+    if (addPlayerButton) {
+        addPlayerButton.addEventListener('click', addPlayer);
+    }
+    // Add a player input field
+    function addPlayer() {
+        if (!playersContainer) return;
+        
+        const playerInput = document.createElement('div');
+        playerInput.className = 'player-input';
+        
+        const playerName = document.createElement('input');
+        playerName.type = 'text';
+        playerName.className = 'player-name';
+        playerName.placeholder = `Player ${playersContainer.children.length + 1} Name`;
+        playerName.required = true;
+        
+        playerInput.appendChild(playerName);
+        playersContainer.appendChild(playerInput);
+        
+        // Focus on the new input
+        playerName.focus();
+    }
+    
     // Load game data from the server
     async function loadGame() {
         try {
@@ -76,9 +102,9 @@ document.addEventListener('DOMContentLoaded', () => {
         // Get all player name inputs
         const playerInputs = document.querySelectorAll('.player-name');
         
-        // Ensure we have exactly 3 player inputs
-        if (playerInputs.length !== 3) {
-            alert('Exactly three players are required.');
+        // Ensure we have at least one player
+        if (playerInputs.length === 0) {
+            alert('At least one player is required.');
             return;
         }
         
