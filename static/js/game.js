@@ -71,15 +71,18 @@ document.addEventListener('DOMContentLoaded', () => {
     // Start the game
     function startGame() {
         // Validate player names
-        const playerInputs = document.querySelectorAll('.player-name');
         players = [];
         
-        // Check if we have exactly 3 player inputs
+        // Get all player name inputs
+        const playerInputs = document.querySelectorAll('.player-name');
+        
+        // Ensure we have exactly 3 player inputs
         if (playerInputs.length !== 3) {
             alert('Exactly three players are required.');
             return;
         }
         
+        // Validate and add each player
         for (const input of playerInputs) {
             const name = input.value.trim();
             if (!name) {
@@ -91,11 +94,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 name,
                 score: 0
             });
-        }
-        
-        if (players.length !== 3) {
-            alert('Exactly three players are required.');
-            return;
         }
         
         // Hide setup screen, show game board
