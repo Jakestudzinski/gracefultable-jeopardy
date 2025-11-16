@@ -2,9 +2,11 @@ document.addEventListener('DOMContentLoaded', () => {
     // Game state
     let gameData = null;
     let players = [];
+    let guests = [];
     let currentPlayer = 0;
     let timer = null;
     let timerInterval = null;
+    let guestMode = true;
     
     // DOM elements
     const gameTitle = document.getElementById('game-title');
@@ -15,7 +17,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const categoriesRow = document.getElementById('categories-row');
     const boardGrid = document.getElementById('board-grid');
     const playersContainer = document.getElementById('players-container');
-    const addPlayerButton = document.getElementById('add-player');
     const startGameButton = document.getElementById('start-game');
     const backToHomeButton = document.getElementById('back-to-home');
     const clueText = document.getElementById('clue-text');
@@ -23,9 +24,12 @@ document.addEventListener('DOMContentLoaded', () => {
     const timerElement = document.getElementById('timer');
     const showAnswerButton = document.getElementById('show-answer');
     const playerButtons = document.getElementById('player-buttons');
+    const guestButtonsContainer = document.getElementById('guest-buttons-container');
+    const guestButtons = document.getElementById('guest-buttons');
     const nobodyButton = document.getElementById('nobody');
     const continueButton = document.getElementById('continue');
     const scoreboard = document.getElementById('scoreboard');
+    
     
     // Current clue being played
     let currentClue = null;
@@ -34,7 +38,6 @@ document.addEventListener('DOMContentLoaded', () => {
     loadGame();
     
     // Button event handlers
-    addPlayerButton.addEventListener('click', addPlayer);
     startGameButton.addEventListener('click', startGame);
     backToHomeButton.addEventListener('click', () => {
         window.location.href = '/';
@@ -45,11 +48,6 @@ document.addEventListener('DOMContentLoaded', () => {
         continueGame();
     });
     continueButton.addEventListener('click', continueGame);
-    
-    // Add default players
-    addPlayer();
-    addPlayer();
-    
     // Load game data from the server
     async function loadGame() {
         try {
@@ -67,27 +65,20 @@ document.addEventListener('DOMContentLoaded', () => {
             window.location.href = '/';
         }
     }
+ 
     
-    // Add a player input field
-    function addPlayer() {
-        const playerInput = document.createElement('div');
-        playerInput.className = 'player-input';
-        
-        const playerName = document.createElement('input');
-        playerName.type = 'text';
-        playerName.className = 'player-name';
-        playerName.placeholder = `Player ${playersContainer.children.length + 1} Name`;
-        playerName.required = true;
-        
-        playerInput.appendChild(playerName);
-        playersContainer.appendChild(playerInput);
-    }
     
     // Start the game
     function startGame() {
         // Validate player names
         const playerInputs = document.querySelectorAll('.player-name');
         players = [];
+        
+        // Check if we have exactly 3 player inputs
+        if (playerInputs.length !== 3) {
+            alert('Exactly three players are required.');
+            return;
+        }
         
         for (const input of playerInputs) {
             const name = input.value.trim();
@@ -102,8 +93,8 @@ document.addEventListener('DOMContentLoaded', () => {
             });
         }
         
-        if (players.length === 0) {
-            alert('At least one player is required.');
+        if (players.length !== 3) {
+            alert('Exactly three players are required.');
             return;
         }
         
@@ -184,6 +175,16 @@ document.addEventListener('DOMContentLoaded', () => {
             ...clue
         };
         
+        // Send to remote devices if available
+        if (typeof sendRemoteClue === 'function') {
+            console.log('Sending clue to remote devices:', clue);
+            // Note: We're sending the answer text as the clue to show on mobile devices
+            // because that's what appears on the main game board
+            sendRemoteClue(categoryTitle, clue.answer, clue.question, clue.value);
+        } else {
+            console.warn('sendRemoteClue function not available - mobile clues will not work');
+        }
+        
         // Show clue display
         const categoryDisplay = document.createElement('div');
         categoryDisplay.className = 'clue-category';
@@ -242,14 +243,14 @@ document.addEventListener('DOMContentLoaded', () => {
             
             playerButtons.appendChild(button);
         });
-    }
+
     
     // Update player score
     function updateScore(points, playerIndex = currentPlayer) {
         players[playerIndex].score += parseInt(points);
         updateScoreboard();
     }
-    
+   
     // Continue game after answering
     function continueGame() {
         // Hide answer display
@@ -277,7 +278,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
     
-    // Get winner message
+    // Game over - get winner message
     function getWinnerMessage() {
         let maxScore = -Infinity;
         let winners = [];
@@ -291,10 +292,34 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         }
         
+        // Return winner message
         if (winners.length === 1) {
             return `${winners[0]} wins with $${maxScore}!`;
         } else {
             return `It's a tie between ${winners.join(' and ')} with $${maxScore}!`;
+        }
+    }
+        
+  
+    
+    // Helper for winner message text
+    function getWinnerMessageText(winners, guestWinners, maxScore, guestMaxScore) {
+        // Determine the final winner message
+        if (guestMaxScore > maxScore) {
+            if (guestWinners.length === 1) {
+                return `Guest ${guestWinners[0]} wins with $${guestMaxScore}! (Non-player)`;
+            } else {
+                return `It's a guest tie between ${guestWinners.join(' and ')} with $${guestMaxScore}! (Non-players)`;
+            }
+        } else if (guestMaxScore === maxScore && guestWinners.length > 0) {
+            const allWinners = [...winners, ...guestWinners];
+            return `It's a tie between ${allWinners.join(', ')} with $${maxScore}!`;
+        } else {
+            if (winners.length === 1) {
+                return `${winners[0]} wins with $${maxScore}!`;
+            } else {
+                return `It's a tie between ${winners.join(' and ')} with $${maxScore}!`;
+            }
         }
     }
     
