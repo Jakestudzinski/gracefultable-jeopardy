@@ -204,10 +204,18 @@ def add_clue(game_id, category_id):
         return jsonify({'error': 'Value, answer, and question are required'}), 400
     
     try:
-        # Find category
-        category = Category.query.filter_by(id=category_id, game_id=game_id).first()
+        # Find category - ensure proper type conversion for IDs
+        try:
+            category_id_int = int(category_id)
+            game_id_int = int(game_id)
+        except ValueError:
+            error_msg = f'Invalid ID format: category_id={category_id}, game_id={game_id} - must be integers'
+            print(error_msg)
+            return jsonify({'error': error_msg}), 400
+            
+        category = Category.query.filter_by(id=category_id_int, game_id=game_id_int).first()
         if category is None:
-            error_msg = f'Category not found with id={category_id} for game_id={game_id}'
+            error_msg = f'Category not found with id={category_id_int} for game_id={game_id_int}'
             print(error_msg)
             return jsonify({'error': error_msg}), 404
         
@@ -261,13 +269,19 @@ def get_categories(game_id):
 @app.route('/api/games/<game_id>/categories/<category_id>', methods=['DELETE'])
 def delete_category(game_id, category_id):
     try:
-        category = Category.query.get(category_id)
-        
-        if category is None:
-            return jsonify({'error': 'Category not found'}), 404
+        # Ensure proper type conversion for IDs
+        try:
+            category_id_int = int(category_id)
+            game_id_int = int(game_id)
+        except ValueError:
+            error_msg = f'Invalid ID format: category_id={category_id}, game_id={game_id} - must be integers'
+            print(error_msg)
+            return jsonify({'error': error_msg}), 400
             
-        if str(category.game_id) != game_id:
-            return jsonify({'error': 'Category does not belong to the specified game'}), 403
+        category = Category.query.get(category_id_int)
+        
+        if category is None or category.game_id != game_id_int:
+            return jsonify({'error': f'Category not found with id={category_id_int} for game_id={game_id_int}'}), 404
         
         # Delete all clues in the category
         for clue in category.clues:
@@ -285,9 +299,18 @@ def delete_category(game_id, category_id):
 @app.route('/api/games/<game_id>/categories/<category_id>/clues', methods=['GET'])
 def get_clues(game_id, category_id):
     try:
-        category = Category.query.filter_by(id=category_id, game_id=game_id).first()
+        # Ensure proper type conversion for IDs
+        try:
+            category_id_int = int(category_id)
+            game_id_int = int(game_id)
+        except ValueError:
+            error_msg = f'Invalid ID format: category_id={category_id}, game_id={game_id} - must be integers'
+            print(error_msg)
+            return jsonify({'error': error_msg}), 400
+            
+        category = Category.query.filter_by(id=category_id_int, game_id=game_id_int).first()
         if category is None:
-            return jsonify({'error': 'Category not found'}), 404
+            return jsonify({'error': f'Category not found with id={category_id_int} for game_id={game_id_int}'}), 404
         
         clues = [{
             'id': clue.id,
