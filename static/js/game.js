@@ -137,6 +137,11 @@ document.addEventListener('DOMContentLoaded', () => {
         categoriesRow.innerHTML = '';
         boardGrid.innerHTML = '';
         
+        // Set the columns for categories row to match the number of categories
+        const numCategories = gameData.categories.length;
+        categoriesRow.style.gridTemplateColumns = `repeat(${numCategories}, 1fr)`;
+        boardGrid.style.gridTemplateColumns = `repeat(${numCategories}, 1fr)`;
+        
         // Add categories
         for (const category of gameData.categories) {
             // Add category header
@@ -155,16 +160,19 @@ document.addEventListener('DOMContentLoaded', () => {
         // Determine values (assuming all categories have the same values)
         const values = [200, 400, 600, 800, 1000];
         
-        // Create board grid
-        for (let valueIndex = 0; valueIndex < values.length; valueIndex++) {
-            const value = values[valueIndex];
+        // Create board grid - by category first, then by value
+        for (let categoryIndex = 0; categoryIndex < gameData.categories.length; categoryIndex++) {
+            const category = gameData.categories[categoryIndex];
             
-            for (let categoryIndex = 0; categoryIndex < gameData.categories.length; categoryIndex++) {
-                const category = gameData.categories[categoryIndex];
+            // For each value in the category
+            for (let valueIndex = 0; valueIndex < values.length; valueIndex++) {
+                const value = values[valueIndex];
                 const clue = category.clues.find(c => parseInt(c.value) === value);
                 
                 const cell = document.createElement('div');
                 cell.className = 'board-cell';
+                cell.dataset.category = categoryIndex;
+                cell.dataset.value = value;
                 
                 if (clue) {
                     if (clue.status === 'used') {
@@ -176,7 +184,8 @@ document.addEventListener('DOMContentLoaded', () => {
                         });
                     }
                 } else {
-                    cell.classList.add('used');
+                    cell.classList.add('empty');
+                    cell.textContent = value;
                 }
                 
                 boardGrid.appendChild(cell);
