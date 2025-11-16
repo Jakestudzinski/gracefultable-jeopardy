@@ -8,4 +8,4 @@ Flask-Migrate==3.1.0
 Flask-SocketIO==5.1.1
 qrcode[pil]==7.3.1
 flask-cors==3.0.10
-psycopg2-binary==2.9.9
+psycopg2-binary==2.9.6
