@@ -220,17 +220,39 @@ document.addEventListener('DOMContentLoaded', () => {
                 categoriesContainer.appendChild(categoryElement);
                 
                 // Get and add clues
-                const cluesResponse = await fetch(`/api/games/${gameId}/categories/${categoryData.id}/clues`);
-                const cluesData = await cluesResponse.json();
-                
-                if (cluesData.length === 0) {
-                    // Add at least one empty clue if none exist
+                try {
+                    const cluesResponse = await fetch(`/api/games/${gameId}/categories/${categoryData.id}/clues`);
+                    
+                    if (!cluesResponse.ok) {
+                        console.warn(`Failed to load clues for category ${categoryData.id}:`, await cluesResponse.text());
+                        // Add an empty clue as fallback
+                        addClue(categoryElement, categoryId);
+                        continue;
+                    }
+                    
+                    const cluesData = await cluesResponse.json();
+                    
+                    // Check if cluesData is an array
+                    if (!Array.isArray(cluesData)) {
+                        console.warn('Clues data is not an array:', cluesData);
+                        // Add an empty clue as fallback
+                        addClue(categoryElement, categoryId);
+                        continue;
+                    }
+                    
+                    if (cluesData.length === 0) {
+                        // Add at least one empty clue if none exist
+                        addClue(categoryElement, categoryId);
+                    } else {
+                        // Add each clue
+                        cluesData.forEach((clueData, clueIndex) => {
+                            addClue(categoryElement, categoryId, clueData);
+                        });
+                    }
+                } catch (error) {
+                    console.error(`Error loading clues for category ${categoryData.id}:`, error);
+                    // Add an empty clue as fallback
                     addClue(categoryElement, categoryId);
-                } else {
-                    // Add each clue
-                    cluesData.forEach((clueData, clueIndex) => {
-                        addClue(categoryElement, categoryId, clueData);
-                    });
                 }
             }
             
